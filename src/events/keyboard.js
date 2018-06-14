@@ -3,17 +3,40 @@
  * @submodule Keyboard
  * @for p5
  * @requires core
+ * @requires constants
  */
 
 'use strict';
 
 var p5 = require('../core/core');
+var constants = require('../core/constants');
 
 /**
  * Holds the key codes of currently pressed keys.
  * @private
  */
 var downKeys = {};
+
+/**
+ * Holds key names
+ * @private
+ */
+var _keyCodes = {
+  alt: constants.ALT,
+  backspace: constants.BACKSPACE,
+  control: constants.CONTROL,
+  delete: constants.DELETE,
+  down: constants.DOWN_ARROW,
+  enter: constants.ENTER,
+  escape: constants.ESCAPE,
+  left: constants.LEFT_ARROW,
+  option: constants.OPTION,
+  return: constants.RETURN,
+  right: constants.RIGHT_ARROW,
+  shift: constants.SHIFT,
+  tab: constants.TAB,
+  up: constants.UP_ARROW
+};
 
 /**
  * The boolean system variable <a href="#/p5/keyIsPressed">keyIsPressed</a> is true if any key is pressed
@@ -316,7 +339,7 @@ p5.prototype._onblur = function(e) {
  * <a href="http://p5js.org/reference/#p5/keyCode">here</a>.
  *
  * @method keyIsDown
- * @param {Number}          code The key to check for.
+ * @param {String|Number}   key The key to check for.
  * @return {Boolean}        whether key is down or not
  * @example
  * <div><code>
@@ -328,19 +351,19 @@ p5.prototype._onblur = function(e) {
  * }
  *
  * function draw() {
- *   if (keyIsDown(LEFT_ARROW)) {
+ *   if (keyIsDown('left')) {
  *     x -= 5;
  *   }
  *
- *   if (keyIsDown(RIGHT_ARROW)) {
+ *   if (keyIsDown('right')) {
  *     x += 5;
  *   }
  *
- *   if (keyIsDown(UP_ARROW)) {
+ *   if (keyIsDown('up')) {
  *     y -= 5;
  *   }
  *
- *   if (keyIsDown(DOWN_ARROW)) {
+ *   if (keyIsDown('down')) {
  *     y += 5;
  *   }
  *
@@ -354,9 +377,27 @@ p5.prototype._onblur = function(e) {
  * 50x50 red ellipse moves left, right, up and down with arrow presses.
  *
  */
-p5.prototype.keyIsDown = function(code) {
+p5.prototype.keyIsDown = function(key) {
   p5._validateParameters('keyIsDown', arguments);
-  return downKeys[code];
+  if (typeof key === 'number') {
+    return downKeys[key] || false;
+  }
+  if (key === '') {
+    // TODO(aria): Use _friendlyParamError here?
+    throw new Error(
+      "keyIsDown requres a non-empty string as a parameter, but you passed ''"
+    );
+  }
+
+  var lowercase = key.toLowerCase();
+  var codeLower = _keyCodes[lowercase];
+  if (codeLower) {
+    return downKeys[codeLower] || false;
+  }
+  codeLower = lowercase.charCodeAt(0);
+  var codeUpper = key.toUpperCase().charCodeAt(0);
+
+  return downKeys[codeLower] || downKeys[codeUpper] || false;
 };
 
 /**
