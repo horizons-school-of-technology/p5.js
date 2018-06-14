@@ -35,7 +35,8 @@ var _keyCodes = {
   right: constants.RIGHT_ARROW,
   shift: constants.SHIFT,
   tab: constants.TAB,
-  up: constants.UP_ARROW
+  up: constants.UP_ARROW,
+  space: ' '.charCodeAt(0)
 };
 
 /**
